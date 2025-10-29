@@ -67,7 +67,7 @@ const SideBar: Component = () => {
                   </A>
                 </li>
                 <li class="hs-accordion" id="current-role-accordion">
-                    <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="current-role-accordion-sub-1-collapse-1">
+                    <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-none hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="current-role-accordion-sub-1-collapse-1">
                       {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-id-card"><path d="M16 10h2" /><path d="M16 14h2" /><path d="M6.17 15a3 3 0 0 1 5.66 0" /><circle cx="9" cy="11" r="2" /><rect x="2" y="5" width="20" height="14" rx="2" /></svg>
                       Peran
@@ -89,7 +89,7 @@ const SideBar: Component = () => {
                             <li>
                               {/* biome-ignore lint/style/noUnusedTemplateLiteral: <explanation> */}
                               <button
-                                type="button" class={`flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300`}
+                                type="button" class="w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-none hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300"
                                 onClick={() => changeUserRole(item.id)}>
                                 {item.name}
                               </button>
