@@ -1,0 +1,46 @@
+{
+  "name": "vite-template-solid",
+  "version": "0.0.1",
+  "description": "xSIA template for SolidJS",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@solid-solutions/devtool": "^1.0.1",
+    "@tailwindcss/forms": "^0.5.10",
+    "@types/dropzone": "^5.7.9",
+    "@types/jquery": "^3.5.33",
+    "@types/leaflet": "^1.9.20",
+    "@types/lodash": "^4.17.20",
+    "solid-devtools": "^0.34.3",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0",
+    "vite-plugin-solid": "^2.11.6"
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.15.3",
+    "@tailwindcss/vite": "^4.1.12",
+    "apexcharts": "^5.3.4",
+    "datatables.net-dt": "^2.3.3",
+    "date-fns": "^4.1.0",
+    "dropzone": "^6.0.0-beta.2",
+    "echarts": "^6.0.0",
+    "jquery": "^3.7.1",
+    "leaflet": "^1.9.4",
+    "lodash": "^4.17.21",
+    "preline": "^3.2.3",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "solid-apexcharts": "^0.6.0",
+    "solid-js": "^1.9.5",
+    "solid-toast": "^0.5.0",
+    "tailwindcss": "^4.1.12",
+    "solid-devtools": "^0.33.0"
+  }
+}

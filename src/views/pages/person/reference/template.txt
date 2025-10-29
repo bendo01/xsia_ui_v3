@@ -1,0 +1,11 @@
+import Header from "../../../../components/application/Navigation/Header";
+import Footer from "../../../../components/application/Navigation/Footer";
+
+export default function PersonReferenceGenderIndex() {
+    return (
+        <>
+            <Header />
+            <Footer />
+        </>
+    );
+}

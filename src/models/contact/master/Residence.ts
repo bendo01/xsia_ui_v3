@@ -1,0 +1,21 @@
+export interface ContactMasterResidence {
+    id: string;
+    street: string,
+    citizens_association: number,
+    neighborhood_association: number,
+    province_id: string,
+    regency_id: string,
+    sub_district_id: string,
+    village_id: string,
+    latitude: number,
+    longitude: number,
+    zoom: number,
+    residence_type_id: string,
+    residenceable_type: string,
+    residenceable_id: string,
+    created_at: Date|null,
+    updated_at: Date|null,
+    deleted_at: Date|null,
+    created_by: string|null,
+    updated_by: string|null,
+}

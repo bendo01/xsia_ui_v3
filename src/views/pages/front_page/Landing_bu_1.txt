@@ -1,0 +1,347 @@
+import { onMount, createSignal, onCleanup, from } from "solid-js";
+import { A, useLocation } from "@solidjs/router";
+
+// import Header from "../../components/front/Header";
+import Footer from "../../components/front/Footer";
+// import ThemeSwitcher from "../../components/front/ThemeSwitcher";
+import Header from "../../components/application/Navigation/Header";
+
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+export default function Landing() {
+  let mapContainer: HTMLDivElement | undefined;
+  const [mapInstance, setMapInstance] = createSignal<L.Map | null>(null);
+  const [windowHeight, setWindowHeight] = createSignal(0);
+  const [mapHeight, setMapHeight] = createSignal("500px");
+
+  // Function to calculate map height based on window size
+  const calculateMapHeight = () => {
+    const height = window.innerHeight;
+    setWindowHeight(height);
+
+    // Calculate available height: window height - header height - footer height - padding
+    // Assuming header ~60px, footer ~60px, padding ~32px (py-8 = 2rem = 32px)
+    const availableHeight = height - 60 - 60 - 32;
+
+    // Use at least 400px, but prefer calculated available height
+    const mapHeightValue = Math.max(500, availableHeight);
+    setMapHeight(`${mapHeightValue}px`);
+  };
+
+  // Handle window resize
+  const handleResize = () => {
+    calculateMapHeight();
+    // Also invalidate map size when window resizes
+    if (mapInstance()) {
+      setTimeout(() => {
+        mapInstance()!.invalidateSize();
+      }, 100);
+    }
+  };
+
+  const [img_path] = createSignal(`/img/logo/${import.meta.env.VITE_INSTITUTION_CODE}/android-chrome-512x512.png`);
+  const [app_name] = createSignal(import.meta.env.VITE_APP_NAME);
+
+  onMount(() => {
+    // Calculate initial map height
+    calculateMapHeight();
+
+    // Add resize event listener
+    window.addEventListener("resize", handleResize);
+
+    if (mapContainer) {
+      console.log("Map container found:", mapContainer);
+
+      // Membuat peta dengan Leaflet
+      const map = L.map(mapContainer).setView([-6.1751, 106.865], 13); // Koordinat Jakarta
+
+      // Menambahkan tile layer (peta dasar)
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Menambahkan marker contoh
+      L.marker([-6.1751, 106.865])
+        .addTo(map)
+        .bindPopup("<b>UMKM A</b><br>Deskripsi UMKM A");
+
+      // Pastikan map resize dengan benar
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+
+      // Simpan instance map untuk cleanup
+      setMapInstance(map);
+    } else {
+      console.log("Map container not found");
+    }
+  });
+
+  // Bersihkan map saat komponen dibersihkan
+  onCleanup(() => {
+    // Remove resize event listener
+    window.removeEventListener("resize", handleResize);
+
+    if (mapInstance()) {
+      mapInstance()!.remove();
+      setMapInstance(null);
+    }
+  });
+
+  return (
+    <div class="flex flex-col min-h-screen">
+      {/* Start Header */}
+      <header class="sticky backdrop-blur-sm bg-neutral-200 dark:bg-neutral-800 bg-opacity-90 shadow top-0 z-10">
+        <div class="flex items-center justify-between p-4 mx-auto text-gray-600 dark:text-gray-400">
+            <div class="inline-flex items-center">
+                <img
+                    class="h-10 w-10"
+                    src={img_path()}
+                    alt="logo"
+                />
+                <span class="ml-3 text-gray-700 dark:text-gray-300">{app_name()}</span>
+            </div>
+            <div class="inline-flex items-center">
+                <button type="button" class="hs-dark-mode-active:hidden block hs-dark-mode font-medium text-gray-800 rounded-full hover:bg-gray-200 focus:outline-none focus:bg-gray-200 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" data-hs-theme-click-value="dark">
+                    <span class="group inline-flex shrink-0 justify-center items-center size-9">
+                        {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        </svg>
+                    </span>
+                </button>
+                <button type="button" class="hs-dark-mode-active:block hidden hs-dark-mode font-medium text-gray-800 rounded-full hover:bg-gray-200 focus:outline-none focus:bg-gray-200 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" data-hs-theme-click-value="light">
+                    <span class="group inline-flex shrink-0 justify-center items-center size-9">
+                        {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                        <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="4" />
+                            <path d="M12 2v2" />
+                            <path d="M12 20v2" />
+                            <path d="m4.93 4.93 1.41 1.41" />
+                            <path d="m17.66 17.66 1.41 1.41" />
+                            <path d="M2 12h2" />
+                            <path d="M20 12h2" />
+                            <path d="m6.34 17.66-1.41 1.41" />
+                            <path d="m19.07 4.93-1.41 1.41" />
+                        </svg>
+                    </span>
+                </button>
+                <button type="button" class="m-1 ms-0 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-none text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:pointer-events-none" aria-controls="hs-offcanvas-right" data-hs-overlay="#hs-offcanvas-right">
+                  {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.25"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-menu"
+                  >
+                      <line x1="4" x2="20" y1="12" y2="12" />
+                      <line x1="4" x2="20" y1="6" y2="6" />
+                      <line x1="4" x2="20" y1="18" y2="18" />
+                  </svg>
+              </button>
+            </div>
+        </div>
+      </header>
+      <div id="hs-offcanvas-right" class="hs-overlay hs-overlay-open:translate-x-0 hidden translate-x-full fixed top-0 end-0 transition-all duration-300 transform h-full max-w-xs w-full z-[80] bg-white border-s dark:bg-neutral-800 dark:border-neutral-700"
+        // biome-ignore lint/a11y/useSemanticElements: <explanation>
+        role="dialog"
+        tabindex="-1"
+        aria-label="Sidebar"
+      >
+        <div class="relative flex flex-col h-full max-h-full">
+          
+          <header class=" p-4 flex justify-between items-center gap-x-2">
+            <a class="flex-none font-semibold text-xl text-black focus:outline-hidden focus:opacity-80 dark:text-white " href="#" aria-label="Brand">UMKM</a>
+            <div class="lg:hidden -me-2">
+              <button type="button" class="flex justify-center items-center gap-x-3 size-6 bg-white border border-gray-200 text-sm text-gray-600 hover:bg-gray-100 rounded-full disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-100 dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:hover:text-neutral-200 dark:focus:text-neutral-200" data-hs-overlay="#hs-offcanvas-right">
+                <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <span class="sr-only">Close</span>
+              </button>
+            </div>
+          </header>
+          <nav class="h-full overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
+            <div class="hs-accordion-group pb-0 px-2  w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
+              <ul class="space-y-1">
+                <li>
+                  <A class={`flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-none hover:bg-neutral-100}`} href="/dashboard">
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house-icon lucide-house"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    Halaman Depan
+                  </A>
+                </li>
+                <li class="hs-accordion" id="location-accordion">
+                  <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="location-accordion-sub-1-collapse-1">
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pinned-icon lucide-map-pinned"><path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/></svg>
+                    Lokasi
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:block ms-auto hidden size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m18 15-6-6-6 6" />
+                    </svg>
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:hidden ms-auto block size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+      
+                  {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+                  <div id="location-accordion-sub-1-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="location-accordion">
+                    <ul class="pt-1 ps-7 space-y-1">
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Kecamatan
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Kecamatan
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Desa
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="hs-accordion" id="person-accordion">
+                  <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="person-accordion-sub-1-collapse-1">
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-person-standing-icon lucide-person-standing"><circle cx="12" cy="5" r="1"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg>
+                    Individual
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:block ms-auto hidden size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m18 15-6-6-6 6" />
+                    </svg>
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:hidden ms-auto block size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+      
+                  {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+                  <div id="person-accordion-sub-1-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="person-accordion">
+                    <ul class="pt-1 ps-7 space-y-1">
+                      <li>
+                        <A class={`flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300`} href="/">
+                          Daftar Individual
+                        </A>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Referensi Jenis Kelamin
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Referensi Jenis Identifikasi
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Referensi Status Pernikahan
+                        </a>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Referensi Agama
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+                <li class="hs-accordion" id="institution-accordion">
+                  <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hs-accordion-active:text-white dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300" aria-expanded="true" aria-controls="institution-accordion-sub-1-collapse-1">
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5"/><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244"/><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05"/></svg>
+                    UMKM
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:block ms-auto hidden size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m18 15-6-6-6 6" />
+                    </svg>
+                    {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                    <svg class="hs-accordion-active:hidden ms-auto block size-4 text-neutral-600 group-hover:text-neutral-500 dark:text-neutral-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </button>
+      
+                  {/* biome-ignore lint/a11y/useSemanticElements: <explanation> */}
+                  <div id="institution-accordion-sub-1-collapse-1" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden" role="region" aria-labelledby="institution-accordion">
+                    <ul class="pt-1 ps-7 space-y-1">
+                      <li>
+                        <A class={`flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300`} href="/demo/person/individual">
+                          Daftar UMKM
+                        </A>
+                      </li>
+                      <li>
+                        <a class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 rounded-lg hover:bg-neutral-100 focus:outline-none focus:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-300 dark:focus:text-neutral-300" href="/">
+                          Referensi Kategori UMKM
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <footer class="mt-auto p-2 border-t border-gray-200 dark:border-neutral-700">
+            <div class="hs-dropdown [--strategy:absolute] [--auto-close:inside] relative w-full inline-flex">
+              <button type="button" id="hs-sidebar-footer-example-with-dropdown" class="w-full inline-flex shrink-0 items-center gap-x-2 p-2 text-start text-sm text-gray-800 rounded-md hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                <img class="shrink-0 size-5 rounded-full" src="/img/common/avatar_default.png" alt="Avatar" />
+                Name
+                {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+                <svg class="shrink-0 size-3.5 ms-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m7 15 5 5 5-5" />
+                  <path d="m7 9 5-5 5 5" />
+                </svg>
+              </button>
+              <div class="hs-dropdown-menu hs-dropdown-open:opacity-100 w-60 transition-[opacity,margin] duration opacity-0 hidden z-20 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-neutral-900 dark:border-neutral-700" role="menu" aria-orientation="vertical" aria-labelledby="hs-sidebar-footer-example-with-dropdown">
+                <div class="p-1">
+                  <a class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800" href="/">
+                    Settings
+                  </a>
+                  <button type="button" class="w-full flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
+                    Keluar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+      {/* End Header */}
+      <div id="page-content" class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        <div class="bg-neutral-100 dark:bg-neutral-900 p-4 rounded">
+          Left column content
+        </div>
+
+        <div class="grid grid-rows-2 gap-4">
+          <div class="bg-neutral-100 dark:bg-neutral-900 p-4 rounded">
+            Top right content
+          </div>
+          <div class="bg-neutral-100 dark:bg-neutral-900 p-4 rounded">
+            Bottom right content
+          </div>
+        </div>
+      </div>
+
+      
+      {/* Start Footer */}
+      <footer class="bg-neutral-200 dark:bg-neutral-800 text-white text-center py-4">
+        <p class="text-neutral-700 dark:text-neutral-300">&copy; 2025 All rights reserved.</p>
+      </footer>
+      {/* End Footer */}
+
+    </div>
+  );
+}

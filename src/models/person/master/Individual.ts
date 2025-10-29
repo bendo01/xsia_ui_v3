@@ -1,0 +1,22 @@
+export interface PersonMasterIndividual {
+    id: string|null,
+    code: string|null,
+    name: string|null,
+    front_title: string|null,
+    last_title: string|null,
+    birth_date: Date|null,
+    birth_place: string|null,
+    gender_id: string|null,
+    religion_id: string|null,
+    occupation_id: string|null,
+    identification_type_id: string|null,
+    marital_status_id: string|null,
+    is_special_need: boolean|null,
+    is_social_protection_card_recipient: boolean|null,
+    is_deceased: boolean|null,
+    created_at: Date|null,
+    updated_at: Date|null,
+    deleted_at: Date|null,
+    created_by: string|null,
+    updated_by: string|null
+}
