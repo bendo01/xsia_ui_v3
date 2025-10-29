@@ -110,6 +110,34 @@ export async function GetCurrentUser() {
     }
 }
 
+export async function ChangeUserRole(role_id: string) {
+    const server_api_url = import.meta.env.VITE_API_SERVER_URL ?? "http://localhost:5150/api/";
+    const path = "auth/users/set_current_role";
+    try {
+        const response = await fetch(`${server_api_url}${path}/${role_id}`, {
+            method: "GET", // HTTP method
+            headers: {
+                "Content-Type": "application/json", // Specify the data format
+                Accept: "application/json",
+                Authorization: `Bearer ${getStorageItem("token")}`,
+            }
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            return {
+                code: 500,
+                message: "Mengganti Peran Pengguna Gagal"
+            };
+        }
+        setStorageItem("current_user", JSON.stringify(data));
+    } catch (error) {
+        return {
+            code: 500,
+            message: "Gagal terhubung ke server"
+        };
+    }
+}
+
 export function LogoutUser(): boolean {
     // const navigate = useNavigate();
     removeStorageItem("token");

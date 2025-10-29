@@ -43,3 +43,25 @@ export interface UserWithRole {
     user: User;
     role: Role;
 }
+
+export const initialUserWithRole: UserWithRole = {
+    user: {
+        email: "",
+        name: "",
+        current_role_id: "",
+    },
+    role: {
+        id: "",
+        name: "",
+        user_id: "",
+        position_type_id: "",
+        roleable_id: "",
+        roleable_type: "",
+        created_at: "",
+        updated_at: "",
+        sync_at: null,
+        deleted_at: null,
+        created_by: "",
+        updated_by: "",
+    }
+};
