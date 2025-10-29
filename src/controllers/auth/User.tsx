@@ -146,6 +146,7 @@ export function LogoutUser(): boolean {
     removeStorageItem("is_verified");
     removeStorageItem("current_role");
     removeStorageItem("roles");
+    removeStorageItem("current_user");
     removeStorageItem("dashboard_path");
     // navigate("/");
     return true;

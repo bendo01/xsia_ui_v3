@@ -6,8 +6,7 @@ import { isAuthenticated } from "../../../../controllers/auth/User";
 const SideBarFooter: Component = () => {
   const navigate = useNavigate();
   const signOut = () => {
-    LogoutUser();
-    if (!isAuthenticated()) {
+    if (LogoutUser()) {
       navigate("/");
     }
   };

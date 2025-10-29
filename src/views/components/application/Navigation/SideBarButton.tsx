@@ -2,7 +2,12 @@ import type { Component } from "solid-js";
 
 const SideBarButton: Component = () => {
     return (
-        <button type="button" class="m-1 ms-0 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-none text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:pointer-events-none" aria-controls="hs-offcanvas-right" data-hs-overlay="#hs-offcanvas-right">
+        <button
+            type="button"
+            class="m-1 ms-0 py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-none text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:pointer-events-none"
+            aria-controls="hs-offcanvas-right"
+            data-hs-overlay="#hs-offcanvas-right"
+        >
             {/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
             <svg
                 xmlns="http://www.w3.org/2000/svg"

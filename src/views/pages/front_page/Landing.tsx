@@ -1,6 +1,6 @@
 import { onMount, createSignal, onCleanup, from } from "solid-js";
 
-import Footer from "../../components/front/Footer";
+import Footer from "../../components/application/Navigation/Footer";
 import Header from "../../components/application/Navigation/Header";
 
 export default function Landing() {
